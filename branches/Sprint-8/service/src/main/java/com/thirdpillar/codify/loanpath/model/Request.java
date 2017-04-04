@@ -7,6 +7,7 @@
  */
 package com.thirdpillar.codify.loanpath.model;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,6 +64,8 @@ public class Request extends BaseDataObject {
 	/** Use serialVersionUID for interoperability. */
 	private static final long serialVersionUID = -2616358184370623909L;
 	
+	@javax.persistence.Transient
+	private boolean synced = false;
 	// ~ Methods
 	// --------------------------------------------------------------------------------------------------------
 
@@ -929,37 +932,32 @@ public class Request extends BaseDataObject {
 		 }else{
 			 Object object = integrationExchangeObj.getTaskOutput();
 		//List<Customer> customers = new ArrayList<Customer>();
-		if(object instanceof Request){
+		if(object instanceof List){
 			LOGGER.info("**************Accept Akritiv response************************");
-			//Request responseObj = (Request)object;
 			/**
 			 * Saving servicing identifier for account
 			 */
-			
-				StringBuffer buffer = new StringBuffer();
-				//if(request.getServiceMessages() != null){
-					//request.getServiceMessages().clear();
-				//}
-				//System.out.println(responseObj);
-				//System.out.println(request.getServiceMessages());
-				//System.out.println(responseObj.getServiceMessages());
-				if(request.getServiceMessages() != null){
-					//request.getServiceMessages().addAll(responseObj.getServiceMessages());
-					for(ServiceMessage msg : request.getServiceMessages()){
-						buffer.append(msg.getMessage());
-						buffer.append("\n");
+			List<Object> list = (List)object;
+			for(Object o : list){
+				if(o instanceof Request){
+					StringBuffer buffer = new StringBuffer();
+					if(request.getServiceMessages() != null && !request.getServiceMessages().isEmpty()){
+						for(ServiceMessage msg : request.getServiceMessages()){
+							buffer.append(msg.getMessage());
+							buffer.append("\n");
+						}
+						request.getServiceMessages().clear();
+					}else{
+						synced = true;
 					}
-					request.getServiceMessages().clear();
+					
+					if(buffer.toString().length()>0){
+						buffer = buffer.delete(buffer.length()-1, buffer.length());
+						CodifyMessage.addMessage("ERR_EXEC_INT_SERVICE",CodifyMessage.Severity.ERROR, new String[]{"Akritiv service",buffer.toString()});
+					}
+					break;
 				}
-				
-					//es.saveOrUpdate(request);
-					//es.saveOrUpdateAll(customers);
-					//es.flush();
-				
-				if(buffer.toString().length()>0){
-					buffer = buffer.delete(buffer.length()-1, buffer.length());
-					CodifyMessage.addMessage("ERR_EXEC_INT_SERVICE",CodifyMessage.Severity.ERROR, new String[]{"Akritiv service",buffer.toString()});
-				}
+			}
 				LOGGER.info("**************Akritiv response saved Successfully************************");
 		 }
 		}
@@ -1178,5 +1176,13 @@ public class Request extends BaseDataObject {
 				}
 			}
 			return match;
+		}
+
+		public boolean isSynced() {
+			return synced;
+		}
+
+		public void setSynced(boolean synced) {
+			this.synced = synced;
 		}
 }
