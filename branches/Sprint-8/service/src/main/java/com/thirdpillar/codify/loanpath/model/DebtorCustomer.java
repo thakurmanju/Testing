@@ -35,11 +35,11 @@ public class DebtorCustomer extends BaseDataObject{
 		User user = (User)ContextHolder.getContext().getUser();
 		List<Team> teams = user.getTeams();
 		for(Team team : teams){
-			if("credit decision team".equals(team.getName().toLowerCase())){
+			if("credit decision team".equals(team.getName())){
 				match = true;
 				break;
 			}
-			if(Constants.DEBTOR_PENDING_STATUS_KEY.equals(getWfStatus().getStatusKey()) && "credit analyst team".equals(team.getName().toLowerCase())){
+			if(Constants.DEBTOR_PENDING_STATUS_KEY.equals(getWfStatus().getStatusKey()) && "credit analyst team".equals(team.getName())){
 				match = true;
 				break;
 			}
@@ -75,7 +75,7 @@ public class DebtorCustomer extends BaseDataObject{
 		if(this.getDbas() !=null){
 			for(PartyDba partyDba : this.getDbas()){
 				if(partyDba.getDbaName() != null && partyDba.getDebtorCustomer() != null){
-					match = set.add(partyDba.getDbaName().toLowerCase()+"-"+partyDba.getDebtorCustomer().toString().toLowerCase());
+					match = set.add(partyDba.getDbaName()+"-"+partyDba.getDebtorCustomer().toString());
 				}
 			}
 		}
@@ -89,7 +89,7 @@ public class DebtorCustomer extends BaseDataObject{
 		if(this.getDbas() !=null){
 			for(PartyDba partyDba : this.getDbas()){
 				if(partyDba.getDbaName() != null && partyDba.getDebtorCustomer() != null){
-					match = set.add(partyDba.getDbaName().toLowerCase()+"-"+partyDba.getDebtorCustomer().toString().toLowerCase());
+					match = set.add(partyDba.getDbaName()+"-"+partyDba.getDebtorCustomer().toString());
 				}
 				
 				if(!match){
@@ -109,7 +109,7 @@ public class DebtorCustomer extends BaseDataObject{
 		if(this.getDbas() !=null){
 			for(PartyDba partyDba : this.getDbas()){
 				if(partyDba.getDbaName() != null && partyDba.getDebtorCustomer() != null){
-					match = set.add(partyDba.getDbaName().toLowerCase()+"-"+partyDba.getDebtorCustomer().toString().toLowerCase());
+					match = set.add(partyDba.getDbaName()+"-"+partyDba.getDebtorCustomer().toString());
 				}
 				
 				if(!match){
